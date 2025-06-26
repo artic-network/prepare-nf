@@ -3,6 +3,10 @@ nextflow.enable.dsl = 2
 
 process prepare {
     label 'process_single'
+    
+    container 'community.wave.seqera.io/library/pandas:2.3.0--4f0f0d6a0c80ada7'
+    conda 'bioconda::python=3.10.12 pandas=2.3.0'
+
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}", pattern: 'sample_sheet.csv'
 
     input:
