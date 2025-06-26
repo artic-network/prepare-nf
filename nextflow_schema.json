@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://raw.githubusercontent.com/artic-network/scylla/main/nextflow_schema.json",
+  "$id": "https://raw.githubusercontent.com/artic-network/prepare-nf/main/nextflow_schema.json",
   "title": "artic-network/prepare-nf",
   "description": "Create a sample sheet for amplicon-nf.",
-  "url": "https://github.com/artic-network/scylla",
+  "url": "https://github.com/artic-network/amplicon-nf",
   "type": "object",
   "definitions": {
     "input_options": {
