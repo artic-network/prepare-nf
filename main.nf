@@ -5,14 +5,14 @@ process prepare {
     label 'process_single'
     
     container 'community.wave.seqera.io/library/pandas:2.3.0--4f0f0d6a0c80ada7'
-    conda 'bioconda::python=3.10.12 pandas=2.3.0'
+    //conda 'bioconda::python=3.10.12 pandas=2.3.0'
 
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}", pattern: 'sample_sheet.csv'
 
     input:
     val platform
     val amplicon_scheme
-    path run_dir
+    val run_dir
     path metadata
 
     output:
@@ -20,10 +20,10 @@ process prepare {
 
     script:
     """
-    python3 prepare.py \
+    prepare.py \
         --platform ${platform} \
-        --amplicon-scheme ${amplicon_scheme} \
-        --run-dir ${run_dir} \
+        --amplicon_scheme ${amplicon_scheme} \
+        --run_dir ${run_dir} \
         --metadata ${metadata}
     """
 }
@@ -33,9 +33,9 @@ workflow {
     main:
     run_dir = file(params.run_dir, type: "dir", checkIfExists: true)
     metadata = file(params.metadata, type: "file", checkIfExists: true)
-k   
-    prepare(params.platform, params.amplicon_scheme, run_dir, metadata)
+
+    prepare(params.platform, params.amplicon_scheme, params.run_dir, metadata)
 
     emit:
-    prepare.out.sample_sheet
+    sample_sheet = prepare.out.sample_sheet
 }
