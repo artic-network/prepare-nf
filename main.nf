@@ -16,7 +16,7 @@ process prepare {
     path metadata
 
     output:
-    path 'samplesheet.csv', emit: sample_sheet
+    path 'sample_sheet.csv', emit: sample_sheet
 
     script:
     """

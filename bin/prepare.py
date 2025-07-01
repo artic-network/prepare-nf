@@ -14,9 +14,11 @@ def load_metadata(metadata_file):
     This function should handle both formats and return a structured format (e.g., list of dictionaries).
     """
     if metadata_file.endswith('.csv'):
-        return pd.read_csv(metadata_file)
+        with open(metadata_file, 'r') as f:
+            return pd.read_csv(f)
     elif metadata_file.endswith('.xls') or metadata_file.endswith('.xlsx'):
-        return pd.read_excel(metadata_file)
+        with open(metadata_file, 'r') as f:
+            return pd.read_excel(f)
     else:
         raise ValueError("Unsupported metadata file format. Please use CSV or XLS/XLSX.")
     
