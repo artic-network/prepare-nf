@@ -3,7 +3,7 @@
   "$id": "https://raw.githubusercontent.com/artic-network/prepare-nf/main/nextflow_schema.json",
   "title": "artic-network/prepare-nf",
   "description": "Create a sample sheet for amplicon-nf.",
-  "url": "https://github.com/artic-network/amplicon-nf",
+  "url": "https://github.com/artic-network/prepare-nf",
   "type": "object",
   "definitions": {
     "input_options": {
