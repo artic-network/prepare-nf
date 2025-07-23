@@ -67,6 +67,19 @@ def check_amplicon_scheme(amplicon_scheme):
         
     return True
 
+def add_platform_and_amplicon_scheme_to_metadata(metadata, platform, amplicon_scheme):
+    """
+    Add the platform and amplicon scheme to each entry in metadata DataFrame.
+    """
+    metadata['platform'] = metadata.apply(
+            lambda row: platform, axis=1
+    )
+    metadata['scheme_name'] = metadata.apply(
+            lambda row: amplicon_scheme, axis=1
+    )
+
+    return metadata
+
 def save_metadata(metadata, output_file='sample_sheet.csv'):
     with open(output_file, 'w') as f:
         metadata = metadata[metadata['sample'].notna()]
@@ -89,6 +102,7 @@ def main():
     check_amplicon_scheme(args.amplicon_scheme)
 
     metadata = add_fastq_path_to_metadata(metadata, args.run_dir, args.platform)
+    metadata = add_platform_and_amplicon_scheme_to_metadata(metadata, args.platform, args.amplicon_scheme)
 
     save_metadata(metadata, "sample_sheet.csv")
 
