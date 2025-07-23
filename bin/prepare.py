@@ -52,7 +52,8 @@ def check_metadata(metadata):
     
     if not metadata['sample'].unique().size == metadata['sample'].size: 
         raise ValueError("Metadata contains duplicate sample names. Each sample name must be unique.")
-    
+    metadata.dropna(subset=['sample'], inplace=True)
+
     return True
 
 
