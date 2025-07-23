@@ -45,7 +45,7 @@ def add_fastq_path_to_metadata(metadata, run_dir, platform):
     Add the full path to the fastq files in the metadata DataFrame.
     This function assumes that the run_dir contains subdirectories named after barcodes.
     """
-    if platform == 'ont':
+    if platform == 'nanopore':
         run_dir = pathlib.Path(run_dir).resolve()
         metadata['fastq_path'] = metadata.apply(
             lambda row: os.path.join(run_dir, row['barcode']), axis=1
@@ -94,6 +94,8 @@ def main():
     args = parser.parse_args()
 
     args.platform = args.platform.lower()
+    if args.platform == "ont":
+        args.platform = "nanopore"
 
     # Load metadata
     metadata = load_metadata(args.metadata)
