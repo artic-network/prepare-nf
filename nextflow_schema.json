@@ -41,7 +41,8 @@
           "description": "Primer scheme identifier in format e.g. artic-inrb-mpox/2500/v1.0.0"
         },
         "custom_scheme_path": {
-          "type": "path",
+          "type": "string",
+          "format": "path",
           "title": "Path to custom amplicon scheme (if relevant)",
           "description": "Absolute path to local custom amplicon scheme"
         }
