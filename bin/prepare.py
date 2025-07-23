@@ -27,9 +27,24 @@ def check_metadata(metadata):
     Check if the metadata contains the required columns: 'sample', 'barcode', and any additional sample information.
     """
     required_columns = ['sample', 'barcode']
+    metadata_columns = metadata.columns.to_list()
+    key_dict = {}
     for col in required_columns:
-        if col not in metadata.columns:
-            raise ValueError(f"Metadata file is missing required column: {col}")
+        for metadata_col in metadata_columns:
+            if col == metadata_col.lower():
+                key_dict[metadata_col] = col
+                break
+            elif col+"s" == metadata_col.lower():
+                key_dict[metadata_col] = col
+                break
+            elif col+"_name" == metadata_col.lower():
+                key_dict[metadata_col] = col
+                break
+    if len(key_dict) != len(required_columns): 
+        raise ValueError(f"Metadata file is missing required columns: {', '.join([col for col in required_columns if col not in key_dict.values()])}")
+    metadata.rename(columns=key_dict, inplace=True)
+
+    print(key_dict)
         
     if not metadata['barcode'].unique().size == metadata['barcode'].size:
         raise ValueError("Metadata contains duplicate barcodes. Each barcode must be unique.")
