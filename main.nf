@@ -23,7 +23,7 @@ process prepare {
     prepare.py \
         --platform ${platform} \
         --amplicon_scheme ${amplicon_scheme} \
-        --custom_scheme_path ${params.custom_scheme_path} \
+        --custom_scheme_path "${params.custom_scheme_path}" \
         --run_dir ${run_dir} \
         --metadata ${metadata}
     """
