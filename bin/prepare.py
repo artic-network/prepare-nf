@@ -6,6 +6,7 @@ import argparse
 import pandas as pd 
 import re
 import pathlib
+import glob
 
 
 def load_metadata(metadata_file):
@@ -62,9 +63,11 @@ def add_fastq_path_to_metadata(metadata, run_dir, platform):
     """
     if platform == 'nanopore':
         run_dir = pathlib.Path(run_dir).resolve()
+        existing_paths = glob.glob(os.path.join(run_dir,"barcode*"))
         metadata['fastq_directory'] = metadata.apply(
-            lambda row: os.path.join(run_dir, row['barcode']), axis=1
+            lambda row: os.path.join(run_dir, row['barcode']) if (os.path.join(run_dir, row['barcode']) in existing_paths) else None, axis=1
         )
+        metadata.dropna(subset=['fastq_directory'], inplace=True)
     else:
         raise ValueError(f"Unsupported platform '{platform}'. Only 'ont' is currently supported.")
     
