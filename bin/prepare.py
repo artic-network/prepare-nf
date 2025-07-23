@@ -47,7 +47,7 @@ def add_fastq_path_to_metadata(metadata, run_dir, platform):
     """
     if platform == 'nanopore':
         run_dir = pathlib.Path(run_dir).resolve()
-        metadata['fastq_path'] = metadata.apply(
+        metadata['fastq_directory'] = metadata.apply(
             lambda row: os.path.join(run_dir, row['barcode']), axis=1
         )
     else:
@@ -55,29 +55,38 @@ def add_fastq_path_to_metadata(metadata, run_dir, platform):
     
     return metadata
 
-def check_amplicon_scheme(amplicon_scheme):
+def add_amplicon_scheme_to_metadata(metadata, amplicon_scheme, custom_scheme_path=None):
     """
     Check if the amplicon scheme is in the correct format.
     """
-    # Check if the amplicon scheme matches the expected format
-    # Example format: 'artic-inrb-mpox/2500/v1.0.0'
-    # This regex checks for a scheme name, followed by a slash, a version number with at least 3 digits, another slash, and a version identifier.
-    if not re.match(r'^\S*\/\d{3,}\/v\d\.\d\.\d(-\S+)?$', amplicon_scheme):
-        raise ValueError("Amplicon scheme must be in the format 'scheme/version/identifier  (e.g., artic-inrb-mpox/2500/v1.0.0)'.")
-        
-    return True
+    if custom_scheme_path:
+        # Check if the custom scheme path exists
+        if not os.path.exists(custom_scheme_path):
+            raise ValueError(f"Custom amplicon scheme path '{custom_scheme_path}' does not exist.")
+        metadata['custom_scheme_path'] = metadata.apply(
+            lambda row: custom_scheme_path, axis=1
+        )
+        metadata['custom_scheme_name'] = metadata.apply(
+            lambda row: amplicon_scheme, axis=1
+        )
+    else:    
+        # Example format: 'artic-inrb-mpox/2500/v1.0.0'
+        # This regex checks for a scheme name, followed by a slash, a version number with at least 3 digits, another slash, and a version identifier.
+        if not re.match(r'^\S*\/\d{3,}\/v\d\.\d\.\d(-\S+)?$', amplicon_scheme):
+            raise ValueError("Amplicon scheme must be in the format 'scheme/version/identifier  (e.g., artic-inrb-mpox/2500/v1.0.0)'.")
+        metadata['scheme_name'] = metadata.apply(
+            lambda row: amplicon_scheme, axis=1
+        )    
+    return metadata
 
-def add_platform_and_amplicon_scheme_to_metadata(metadata, platform, amplicon_scheme):
+def add_platform_to_metadata(metadata, platform, amplicon_scheme):
     """
     Add the platform and amplicon scheme to each entry in metadata DataFrame.
     """
     metadata['platform'] = metadata.apply(
             lambda row: platform, axis=1
     )
-    metadata['scheme_name'] = metadata.apply(
-            lambda row: amplicon_scheme, axis=1
-    )
-
+    
     return metadata
 
 def save_metadata(metadata, output_file='sample_sheet.csv'):
@@ -91,6 +100,7 @@ def main():
     parser.add_argument("--run_dir", type=str, help="Run directory")
     parser.add_argument("--metadata", type=str, help="Metadata file (CSV or XLS).")
     parser.add_argument("--amplicon_scheme", type=str, help="Amplicon scheme identifier (e.g., artic-inrb-mpox/2500/v1.0.0")
+    parser.add_argument("--custom_scheme_path", type=str, help="Absolute path to local custom amplicon scheme (if relevant)")
     args = parser.parse_args()
 
     args.platform = args.platform.lower()
@@ -101,12 +111,13 @@ def main():
     metadata = load_metadata(args.metadata)
     check_metadata(metadata)
 
-    check_amplicon_scheme(args.amplicon_scheme)
-
     metadata = add_fastq_path_to_metadata(metadata, args.run_dir, args.platform)
-    metadata = add_platform_and_amplicon_scheme_to_metadata(metadata, args.platform, args.amplicon_scheme)
 
-    save_metadata(metadata, "sample_sheet.csv")
+    metadata = add_amplicon_scheme_to_metadata(metadata, args.amplicon_scheme, args.custom_scheme_path)
+
+    metadata = add_platform_to_metadata(metadata, args.platform, args.amplicon_scheme)
+
+    save_metadata(metadata, "sample_config.csv")
 
 
 if __name__ == "__main__":
